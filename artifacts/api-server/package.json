@@ -4,9 +4,9 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "export NODE_ENV=development && pnpm run build && pnpm run start",
-    "build": "node ./build.mjs",
-    "start": "node --enable-source-maps ./dist/index.mjs",
+    "dev": "mvn -f spring/pom.xml spring-boot:run",
+    "build": "mvn -f spring/pom.xml package -DskipTests",
+    "start": "java -jar spring/target/rental-api.jar",
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "dependencies": {
