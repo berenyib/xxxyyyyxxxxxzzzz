@@ -1,0 +1,28 @@
+kind = "web"
+previewPath = "/"
+title = "Bérleti kezelő"
+description = "Modern bérleti hirdető és kezelő webalkalmazás bérbeadóknak és bérlőknek. Hirdetések, ingatlanok, karbantartási kérelmek és bérleti díjak egyetlen áttekinthető felületen."
+version = "1.0.0"
+id = "artifacts/berleti-kezelo"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 24952
+
+[services.development]
+run = "pnpm --filter @workspace/berleti-kezelo run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/berleti-kezelo", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/berleti-kezelo/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "24952"
+BASE_PATH = "/"

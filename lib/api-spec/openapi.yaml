@@ -3,13 +3,19 @@ info:
   # Do not change the title, if the title changes, the import paths will be broken
   title: Api
   version: 0.1.0
-  description: API specification
+  description: Bérleti hirdető és kezelő rendszer API
 servers:
   - url: /api
     description: Base API path
 tags:
   - name: health
     description: Health operations
+  - name: dashboard
+  - name: listings
+  - name: properties
+  - name: maintenance
+  - name: rents
+  - name: activity
 paths:
   /healthz:
     get:
@@ -24,7 +30,301 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+  /dashboard/summary:
+    get:
+      operationId: getDashboardSummary
+      tags: [dashboard]
+      summary: Dashboard összesítő
+      responses:
+        "200":
+          description: Összesített mutatók
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DashboardSummary"
+  /activity:
+    get:
+      operationId: getActivity
+      tags: [activity]
+      responses:
+        "200":
+          description: Legutóbbi események
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Activity"
+  /listings:
+    get:
+      operationId: listListings
+      tags: [listings]
+      summary: Aktív hirdetések listázása
+      parameters:
+        - $ref: "#/components/parameters/Search"
+        - $ref: "#/components/parameters/City"
+        - $ref: "#/components/parameters/MinPrice"
+        - $ref: "#/components/parameters/MaxPrice"
+      responses:
+        "200":
+          description: Hirdetések
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Listing"
+    post:
+      operationId: createListing
+      tags: [listings]
+      summary: Új hirdetés létrehozása
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ListingInput"
+      responses:
+        "201":
+          description: Létrehozott hirdetés
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Listing"
+  /listings/{id}:
+    get:
+      operationId: getListing
+      tags: [listings]
+      parameters:
+        - $ref: "#/components/parameters/Id"
+      responses:
+        "200":
+          description: Hirdetés
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Listing"
+        "404":
+          $ref: "#/components/responses/NotFound"
+    patch:
+      operationId: updateListing
+      tags: [listings]
+      parameters:
+        - $ref: "#/components/parameters/Id"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ListingUpdate"
+      responses:
+        "200":
+          description: Frissített hirdetés
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Listing"
+    delete:
+      operationId: deleteListing
+      tags: [listings]
+      parameters:
+        - $ref: "#/components/parameters/Id"
+      responses:
+        "204":
+          description: Törölve
+  /properties:
+    get:
+      operationId: listProperties
+      tags: [properties]
+      responses:
+        "200":
+          description: Kezelt ingatlanok
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Property"
+    post:
+      operationId: createProperty
+      tags: [properties]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PropertyInput"
+      responses:
+        "201":
+          description: Létrehozott ingatlan
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Property"
+  /properties/{id}:
+    patch:
+      operationId: updateProperty
+      tags: [properties]
+      parameters:
+        - $ref: "#/components/parameters/Id"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PropertyUpdate"
+      responses:
+        "200":
+          description: Frissített ingatlan
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Property"
+    delete:
+      operationId: deleteProperty
+      tags: [properties]
+      parameters:
+        - $ref: "#/components/parameters/Id"
+      responses:
+        "204":
+          description: Törölve
+  /maintenance:
+    get:
+      operationId: listMaintenanceRequests
+      tags: [maintenance]
+      parameters:
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [OPEN, IN_PROGRESS, RESOLVED, REJECTED]
+      responses:
+        "200":
+          description: Karbantartási kérelmek
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/MaintenanceRequest"
+    post:
+      operationId: createMaintenanceRequest
+      tags: [maintenance]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MaintenanceInput"
+      responses:
+        "201":
+          description: Létrehozott kérelem
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MaintenanceRequest"
+  /maintenance/{id}:
+    patch:
+      operationId: updateMaintenanceRequest
+      tags: [maintenance]
+      parameters:
+        - $ref: "#/components/parameters/Id"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MaintenanceUpdate"
+      responses:
+        "200":
+          description: Frissített kérelem
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MaintenanceRequest"
+  /rents:
+    get:
+      operationId: listRents
+      tags: [rents]
+      responses:
+        "200":
+          description: Bérleti díjak
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Rent"
+    post:
+      operationId: createRent
+      tags: [rents]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RentInput"
+      responses:
+        "201":
+          description: Létrehozott bérleti díj
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Rent"
+  /rents/{id}:
+    patch:
+      operationId: updateRent
+      tags: [rents]
+      parameters:
+        - $ref: "#/components/parameters/Id"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RentUpdate"
+      responses:
+        "200":
+          description: Frissített bérleti díj
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Rent"
 components:
+  parameters:
+    Id:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: integer
+    Search:
+      name: search
+      in: query
+      schema:
+        type: string
+    City:
+      name: city
+      in: query
+      schema:
+        type: string
+    MinPrice:
+      name: minPrice
+      in: query
+      schema:
+        type: number
+    MaxPrice:
+      name: maxPrice
+      in: query
+      schema:
+        type: number
+  responses:
+    NotFound:
+      description: Nem található
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
   schemas:
     HealthStatus:
       type: object
@@ -33,4 +333,138 @@ components:
           type: string
       required:
         - status
+    Error:
+      type: object
+      required: [error]
+      properties:
+        error:
+          type: string
+    Listing:
+      type: object
+      required: [id, title, city, address, price, bedrooms, size, status, imageUrl]
+      properties:
+        id: { type: integer }
+        title: { type: string }
+        city: { type: string }
+        address: { type: string }
+        price: { type: number }
+        bedrooms: { type: integer }
+        size: { type: integer }
+        status: { type: string, enum: [ACTIVE, DRAFT, RENTED] }
+        imageUrl: { type: string }
+        description: { type: string }
+        tenantName: { type: ["string", "null"] }
+    ListingInput:
+      type: object
+      required: [title, city, address, price, bedrooms, size, imageUrl]
+      properties:
+        title: { type: string, minLength: 3 }
+        city: { type: string }
+        address: { type: string }
+        price: { type: number, minimum: 0 }
+        bedrooms: { type: integer, minimum: 0 }
+        size: { type: integer, minimum: 1 }
+        imageUrl: { type: string }
+        description: { type: string }
+        status: { type: string, enum: [ACTIVE, DRAFT, RENTED] }
+    ListingUpdate:
+      allOf:
+        - $ref: "#/components/schemas/ListingInput"
+      required: []
+    Property:
+      type: object
+      required: [id, name, address, city, price, status, imageUrl, tenantName]
+      properties:
+        id: { type: integer }
+        name: { type: string }
+        address: { type: string }
+        city: { type: string }
+        price: { type: number }
+        status: { type: string, enum: [OCCUPIED, AVAILABLE, MAINTENANCE] }
+        imageUrl: { type: string }
+        tenantName: { type: ["string", "null"] }
+        nextPaymentDate: { type: ["string", "null"] }
+    PropertyInput:
+      type: object
+      required: [name, address, city, price, imageUrl]
+      properties:
+        name: { type: string }
+        address: { type: string }
+        city: { type: string }
+        price: { type: number, minimum: 0 }
+        imageUrl: { type: string }
+    PropertyUpdate:
+      allOf:
+        - $ref: "#/components/schemas/PropertyInput"
+    MaintenanceRequest:
+      type: object
+      required: [id, propertyId, propertyName, tenantName, title, description, status, createdAt, priority]
+      properties:
+        id: { type: integer }
+        propertyId: { type: integer }
+        propertyName: { type: string }
+        tenantName: { type: string }
+        title: { type: string }
+        description: { type: string }
+        status: { type: string, enum: [OPEN, IN_PROGRESS, RESOLVED, REJECTED] }
+        priority: { type: string, enum: [LOW, MEDIUM, HIGH] }
+        createdAt: { type: string }
+    MaintenanceInput:
+      type: object
+      required: [propertyId, title, description, priority]
+      properties:
+        propertyId: { type: integer }
+        title: { type: string }
+        description: { type: string }
+        priority: { type: string, enum: [LOW, MEDIUM, HIGH] }
+    MaintenanceUpdate:
+      type: object
+      properties:
+        status: { type: string, enum: [OPEN, IN_PROGRESS, RESOLVED, REJECTED] }
+        priority: { type: string, enum: [LOW, MEDIUM, HIGH] }
+    Rent:
+      type: object
+      required: [id, propertyId, propertyName, tenantName, amount, dueDate, status]
+      properties:
+        id: { type: integer }
+        propertyId: { type: integer }
+        propertyName: { type: string }
+        tenantName: { type: string }
+        amount: { type: number }
+        dueDate: { type: string }
+        status: { type: string, enum: [PAID, PENDING, OVERDUE] }
+    RentInput:
+      type: object
+      required: [propertyId, tenantName, amount, dueDate]
+      properties:
+        propertyId: { type: integer }
+        tenantName: { type: string }
+        amount: { type: number, minimum: 0 }
+        dueDate: { type: string }
+        status: { type: string, enum: [PAID, PENDING, OVERDUE] }
+    RentUpdate:
+      type: object
+      properties:
+        status: { type: string, enum: [PAID, PENDING, OVERDUE] }
+        amount: { type: number, minimum: 0 }
+        dueDate: { type: string }
+    DashboardSummary:
+      type: object
+      required: [totalProperties, activeListings, occupiedProperties, openMaintenance, pendingRentTotal, paidRentPercent]
+      properties:
+        totalProperties: { type: integer }
+        activeListings: { type: integer }
+        occupiedProperties: { type: integer }
+        openMaintenance: { type: integer }
+        pendingRentTotal: { type: number }
+        paidRentPercent: { type: number }
+    Activity:
+      type: object
+      required: [id, type, title, description, createdAt]
+      properties:
+        id: { type: integer }
+        type: { type: string }
+        title: { type: string }
+        description: { type: string }
+        createdAt: { type: string }
 

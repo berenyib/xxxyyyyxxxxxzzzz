@@ -1,6 +1,6 @@
-# [Project name]
+# Bérleti kezelő
 
-_Replace the heading above with the project's name, and this line with one sentence describing what this app does for users._
+Modern bérleti hirdető és kezelő alkalmazás, amely egy helyen fogja össze az ingatlanokat, hirdetéseket, karbantartási ügyeket és bérleti díjakat.
 
 ## Run & Operate
 
@@ -22,15 +22,27 @@ _Replace the heading above with the project's name, and this line with one sente
 
 ## Where things live
 
-_Populate as you build — short repo map plus pointers to the source-of-truth file for DB schema, API contracts, theme files, etc._
+- `artifacts/berleti-kezelo/src/App.tsx` — a teljes reszponzív alkalmazásfelület és az oldalak
+- `artifacts/berleti-kezelo/src/index.css` — alkalmazás-téma és vizuális tokenek
+- `artifacts/api-server/src/routes/rental.ts` — a hirdetési, ingatlan-, karbantartási és bérleti díj API
+- `lib/api-spec/openapi.yaml` — az API egyetlen szerződésforrása
+- `lib/api-client-react/src/generated/` — a generált React Query kliens
 
 ## Architecture decisions
 
-_Populate as you build — non-obvious choices a reader couldn't infer from the code (3-5 bullets)._
+- Az első verzió REST-alapú, hogy a fő CRUD-folyamatok stabilak legyenek; GraphQL és WebSocket későbbi iterációban kerül be.
+- Az MVP demó szerepkör-választást használ, így a teljes bérbeadói felület azonnal kipróbálható; valódi hitelesítés a következő biztonsági fázis.
+- Az API jelenleg gyorsan indítható, memóriában seedelt bemutató adatokkal működik; a PostgreSQL/Drizzle perzisztencia bevezetése a következő lépés.
+- Az OpenAPI szerződésből készülnek a kliens hookok, ezért a frontend nem kézzel írt API-típusokra támaszkodik.
 
 ## Product
 
-_Describe the high-level user-facing capabilities of this app once they exist._
+- Dashboard áttekintő ingatlan-, hirdetés-, karbantartási- és fizetési mutatókkal.
+- Hirdetések keresése, szűrése, létrehozása, módosítása és törlése.
+- Ingatlanportfólió kezelése.
+- Karbantartási kérelmek beküldése, szűrése és állapotváltása.
+- Bérleti díjak rögzítése, követése és státuszkezelése.
+- Közös naptárnézet a fizetési és karbantartási eseményekkel.
 
 ## User preferences
 
@@ -38,7 +50,9 @@ _Populate as you build — explicit user instructions worth remembering across s
 
 ## Gotchas
 
-_Populate as you build — sharp edges, "always run X before Y" rules._
+- OpenAPI módosítás után mindig futtatni kell a `pnpm --filter @workspace/api-spec run codegen` parancsot.
+- A frontend artifact workflow biztosítja a `PORT` és `BASE_PATH` értékeket; a Vite buildet workflow-n keresztül kell futtatni.
+- A kliens TypeScript-konfigurációjához szükséges a `dom.iterable`, mert a generált kliens a `Headers.entries()` API-t használja.
 
 ## Pointers
 

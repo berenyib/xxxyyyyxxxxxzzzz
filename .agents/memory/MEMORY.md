@@ -1,0 +1,1 @@
+- [Generated client browser types](api-client-dom-iterable.md) — keep `dom.iterable` enabled for Orval clients using `Headers.entries()`.
