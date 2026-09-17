@@ -1,1 +1,2 @@
 - [Generated client browser types](api-client-dom-iterable.md) — keep `dom.iterable` enabled for Orval clients using `Headers.entries()`.
+- [Angular JIT under Vite](angular-jit-vite.md) — inline imported templates and styles with `?raw` when standalone Angular runs without the CLI compiler.
